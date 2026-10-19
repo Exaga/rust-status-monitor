@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rust Server Status</title>
+
+  <style>
+    :root {
+      --page-bg: #111;
+      --panel-bg: #1b1b1b;
+      --panel-alt: #222;
+      --border: #3a3a3a;
+      --text: #e8e8e8;
+      --muted: #aaa;
+      --online: #00ff00;
+      --offline: #ff4444;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      background: var(--page-bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1,
+    h2 {
+      margin-top: 0;
+    }
+
+    .server-heading {
+      margin-bottom: 1rem;
+    }
+
+    .server-heading p {
+      color: var(--muted);
+    }
+
+    .server-table-wrap {
+      overflow-x: auto;
+    }
+
+    .server-table {
+      width: 100%;
+      min-width: 900px;
+      border-collapse: collapse;
+      background: var(--panel-bg);
+    }
+
+    .server-table td {
+      width: 20%;
+      padding: 0.9rem;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .server-topbar td {
+      background: var(--panel-alt);
+    }
+
+    .server-stat-label,
+    .server-stat-value {
+      display: block;
+    }
+
+    .server-stat-label {
+      margin-bottom: 0.35rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .server-stat-value {
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+    }
+
+    .server-connect-row td {
+      background: var(--panel-alt);
+      text-align: center;
+    }
+
+    .server-connect-label {
+      font-weight: bold;
+    }
+
+    .server-status {
+      display: inline-block;
+      width: 0.65rem;
+      height: 0.65rem;
+      margin-right: 0.45rem;
+      border-radius: 50%;
+      background: var(--offline);
+    }
+
+    .server-status.online {
+      background: var(--online);
+    }
+
+    .server-status.offline {
+      background: var(--offline);
+    }
+
+    .error {
+      margin-top: 1rem;
+      color: var(--offline);
+    }
+
+    .connection-help {
+      margin-top: 1.5rem;
+      line-height: 1.6;
+    }
+
+    code {
+      color: var(--online);
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="server-heading">
+      <h1>Rust Server Status</h1>
+      <p>Live RustDedicated server status and connection information.</p>
+    </div>
+
+    <div class="server-table-wrap">
+      <table class="server-table">
+        <tbody>
+          <tr class="server-topbar">
+            <td>
+              <span class="server-stat-label">Server Name</span>
+              <span class="server-stat-value" id="server-name">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Status</span>
+              <span class="server-stat-value">
+                <span class="server-status offline" id="server-status-dot" aria-hidden="true"></span>
+                <span id="server-status">OFFLINE</span>
+              </span>
+            </td>
+            <td>
+              <span class="server-stat-label">Ping</span>
+              <span class="server-stat-value" id="server-ping">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Players</span>
+              <span class="server-stat-value" id="server-players">- / -</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Timestamp</span>
+              <span class="server-stat-value" id="server-timestamp">-</span>
+            </td>
+          </tr>
+
+          <tr class="server-connect-row">
+            <td colspan="5">
+              <span class="server-connect-label">Connect:</span>
+              <span id="server-connect">-</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="server-stat-label">Map</span>
+              <span class="server-stat-value" id="server-map">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Uptime</span>
+              <span class="server-stat-value" id="server-uptime">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Save Created</span>
+              <span class="server-stat-value" id="server-save-created">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Max Players</span>
+              <span class="server-stat-value" id="server-max-players">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Queue</span>
+              <span class="server-stat-value" id="server-queue">-</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="server-stat-label">Joining</span>
+              <span class="server-stat-value" id="server-joining">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Reserved Slots</span>
+              <span class="server-stat-value" id="server-reserved">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Restarting</span>
+              <span class="server-stat-value" id="server-restarting">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Server FPS</span>
+              <span class="server-stat-value" id="server-fps">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Memory</span>
+              <span class="server-stat-value" id="server-memory">-</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="server-stat-label">Entity Count</span>
+              <span class="server-stat-value" id="server-entities">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">VAC</span>
+              <span class="server-stat-value" id="server-vac">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Version</span>
+              <span class="server-stat-value" id="server-version">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Protocol</span>
+              <span class="server-stat-value" id="server-protocol">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Environment</span>
+              <span class="server-stat-value" id="server-environment">-</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <span class="server-stat-label">Game Host</span>
+              <span class="server-stat-value" id="server-host">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Game Port</span>
+              <span class="server-stat-value" id="server-game-port">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Query Port</span>
+              <span class="server-stat-value" id="server-query-port">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">RCON Port</span>
+              <span class="server-stat-value" id="server-rcon-port">-</span>
+            </td>
+            <td>
+              <span class="server-stat-label">Collected</span>
+              <span class="server-stat-value" id="server-collected">-</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="connection-help">
+      To connect from the Rust console, press <strong>F1</strong> and enter:
+      <code id="connect-command">client.connect HOST:PORT</code>
+    </p>
+
+    <p class="error" id="status-error" hidden></p>
+  </main>
+
+  <script>
+    "use strict";
+
+    // JSON file generated by rust_server_status.py.
+    const STATUS_JSON = "rust_server_status.json";
+
+    function valueOrDash(value) {
+      return value === null || value === undefined || value === "" ? "-" : value;
+    }
+
+    function formatUptime(seconds) {
+      if (seconds === null || seconds === undefined) {
+        return "-";
+      }
+
+      const total = Number(seconds);
+
+      if (!Number.isFinite(total)) {
+        return "-";
+      }
+
+      const days = Math.floor(total / 86400);
+      const hours = Math.floor((total % 86400) / 3600);
+      const minutes = Math.floor((total % 3600) / 60);
+
+      const parts = [];
+
+      if (days) {
+        parts.push(`${days}d`);
+      }
+
+      if (hours || days) {
+        parts.push(`${hours}h`);
+      }
+
+      parts.push(`${minutes}m`);
+
+      return parts.join(" ");
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = valueOrDash(value);
+    }
+
+    function populateServerStatus(data) {
+      const status = String(data.status || "OFFLINE").toUpperCase();
+      const online = status === "ONLINE";
+
+      setText("server-name", data.server_name);
+      setText("server-status", status);
+      setText("server-ping", data.ping_ms === null || data.ping_ms === undefined ? "-" : `${data.ping_ms} ms`);
+      setText("server-players", `${valueOrDash(data.players)} / ${valueOrDash(data.max_players)}`);
+      setText("server-timestamp", data.collected_at);
+
+      setText("server-map", data.map);
+      setText("server-uptime", formatUptime(data.uptime_seconds));
+      setText("server-save-created", data.save_created_time);
+      setText("server-max-players", data.max_players);
+      setText("server-queue", data.queued);
+
+      setText("server-joining", data.joining);
+      setText("server-reserved", data.reserved_slots);
+      setText("server-restarting", data.restarting === null || data.restarting === undefined ? "-" : String(data.restarting));
+      setText("server-fps", data.server_fps);
+      setText("server-memory", data.memory_mb === null || data.memory_mb === undefined ? "-" : `${data.memory_mb} MB`);
+
+      setText("server-entities", data.entity_count);
+      setText("server-vac", data.vac_enabled === null || data.vac_enabled === undefined ? "-" : (data.vac_enabled ? "Enabled" : "Disabled"));
+      setText("server-version", data.version);
+      setText("server-protocol", data.protocol);
+      setText("server-environment", data.environment);
+
+      setText("server-host", data.game_host);
+      setText("server-game-port", data.game_port);
+      setText("server-query-port", data.query_port);
+      setText("server-rcon-port", data.rcon_port);
+      setText("server-collected", data.collected_at);
+
+      const connect = `${valueOrDash(data.game_host)}:${valueOrDash(data.game_port)}`;
+      setText("server-connect", connect);
+      setText("connect-command", `client.connect ${connect}`);
+
+      const dot = document.getElementById("server-status-dot");
+      dot.classList.toggle("online", online);
+      dot.classList.toggle("offline", !online);
+    }
+
+    async function loadServerStatus() {
+      const error = document.getElementById("status-error");
+
+      try {
+        const response = await fetch(STATUS_JSON, { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        populateServerStatus(data);
+        error.hidden = true;
+      } catch (exception) {
+        error.textContent = `Unable to load ${STATUS_JSON}: ${exception.message}`;
+        error.hidden = false;
+      }
+    }
+
+    loadServerStatus();
+  </script>
+</body>
+</html>
