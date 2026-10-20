@@ -487,4 +487,7 @@ Before calling it finished, make sure all of these work:
 7. The HTML page loads through the web server and displays the JSON data.
 8. Cron keeps the JSON updated.
 
-Copyright (c) 2026 Exaga/Kara.
+Copyright © 2026 Exaga/Kara - rust.penthux.net
+
+\#EOF\<\*\>
+\# K4R4\<3\:\*
