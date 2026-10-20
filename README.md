@@ -489,5 +489,5 @@ Before calling it finished, make sure all of these work:
 
 Copyright © 2026 Exaga/Kara - rust.penthux.net
 
-\#EOF\<\*\>
+\#EOF\<\*\>     
 \# K4R4\<3\:\*
