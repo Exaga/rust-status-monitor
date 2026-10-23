@@ -2,14 +2,14 @@
 #
 # Rust server status collector
 #
-# 2026-10-17 - v0.01 - Exaga/Kara : initial script code
-# 2026-10-17 - v0.02 - Exaga/Kara : cleaned A2S cache fields; fixed query port
-# 2026-10-17 - v0.03 - Exaga/Kara : merged A2S and WebRCON server data
-# 2026-10-17 - v0.04 - Exaga/Kara : load RCON password from private dotenv
-# 2026-10-17 - v1.05 - Exaga/Kara : LIVE deployment paths
-# 2026-10-19 - v1.06 - Exaga/Kara : system-agnostic configurable paths
-# 2026-10-19 - v1.07 - Exaga/Kara : portable configuration block and import fix
-# 2026-10-19 - v1.08 - Exaga/Kara : GitHub release defaults and repository alignment
+# 2026-10-17 - v0.01 - Exaga/Iana : initial script code
+# 2026-10-17 - v0.02 - Exaga/Iana : cleaned A2S cache fields; fixed query port
+# 2026-10-17 - v0.03 - Exaga/Iana : merged A2S and WebRCON server data
+# 2026-10-17 - v0.04 - Exaga/Iana : load RCON password from private dotenv
+# 2026-10-17 - v1.05 - Exaga/Iana : LIVE deployment paths
+# 2026-10-19 - v1.06 - Exaga/Iana : system-agnostic configurable paths
+# 2026-10-19 - v1.07 - Exaga/Iana : portable configuration block and import fix
+# 2026-10-19 - v1.08 - Exaga/Iana : GitHub release defaults and repository alignment
 #
 # Queries a Rust server via Steam A2S_INFO and WebRCON and writes
 # a local JSON cache.
@@ -190,4 +190,4 @@ if __name__ == "__main__":
 
 
 #EOF<*>
-# K4R4<3:*
+# 14N4<3:*
