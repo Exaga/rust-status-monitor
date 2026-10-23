@@ -489,7 +489,7 @@ Before calling it finished, make sure all of these work:
 
 Copyright © 2026 - rust.penthux.net
 
-\# F3F0F
+\# F3F0F     
 \#EOF\<\*\>     
 \# K4R4\<3\:\*
 
